@@ -5,12 +5,10 @@ from rest_framework import status, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from users.serializers import UserSerializer
 
 from .exceptions import UserDataException
-from users.serializers import UserSerializer
 from .sign_up_token import account_activation_token
-
-
 
 
 @api_view(['POST'])
@@ -70,9 +68,3 @@ def user_activation(request):
             return Response({'errors': 'неверный confirmation_code'},
                             status=status.HTTP_400_BAD_REQUEST)
     return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'POST'])
-@permission_classes([])
-def deactivate(request):
-    return Response({'mess': f'all ok {request.user}'})

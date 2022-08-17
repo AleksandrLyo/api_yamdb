@@ -24,5 +24,3 @@ class IsAdminOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         user = get_object_or_404(User, username=request.user.username)
         return user.role == 'admin'
-    # def has_object_permission(self, request, view, obj):
-    #     return request.user.role == 'admin'
