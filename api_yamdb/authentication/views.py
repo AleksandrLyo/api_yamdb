@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
@@ -10,6 +10,7 @@ from users.serializers import UserSerializer
 from .exceptions import UserDataException
 from .sign_up_token import account_activation_token
 
+User = get_user_model()
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
@@ -56,9 +57,9 @@ def user_activation(request):
             return Response(u.message, status=status.HTTP_400_BAD_REQUEST)
         user = get_object_or_404(User, username=username)
 
-        if user.is_active:
-            return Response({'errors': 'Пользователь уже активирован'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # if user.is_active:
+        #     return Response({'errors': 'Пользователь уже активирован'},
+        #                     status=status.HTTP_400_BAD_REQUEST)
         if account_activation_token.check_token(user, activation_token):
             user.is_active = True
             user.save()
