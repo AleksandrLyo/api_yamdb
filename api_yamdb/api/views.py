@@ -2,21 +2,19 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
-from reviews.models import Title
+from reviews.models import Review, Title
 
-from .permissions import AuthorOrReadOnly
+from .permissions import AdminModeratorAuthorOrReadOnly
 from .serializers import CommentsSerializer, ReviewsSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewsSerializer
-    pagination_class = PageNumberPagination
-    permission_classes = [AuthorOrReadOnly]
+    permission_classes = (AdminModeratorAuthorOrReadOnly)
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        queryset = title.reviews.all()
-        return queryset
+        return title.reviews.all()
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -36,17 +34,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentsSerializer
     pagination_class = PageNumberPagination
-    permission_classes = [AuthorOrReadOnly]
+    permission_classes = (AdminModeratorAuthorOrReadOnly)
 
     def get_queryset(self):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        review = title.reviews.get(id=self.kwargs.get('review_id'))
-        queryset = review.comments.all()
-        return queryset
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        return review.comments.all()
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
-        review = title.reviews.get(id=self.kwargs.get('review_id'))
+        review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
 
     def perform_update(self, serializer):
