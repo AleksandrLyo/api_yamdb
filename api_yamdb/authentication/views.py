@@ -10,7 +10,7 @@ from .exceptions import UserDataException
 from users.serializers import UserSerializer
 from .sign_up_token import account_activation_token
 
-from users.permissions import AdminPermission, UserPermission
+
 
 
 @api_view(['POST'])
@@ -73,6 +73,6 @@ def user_activation(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([UserPermission, AdminPermission])
+@permission_classes([])
 def deactivate(request):
     return Response({'mess': f'all ok {request.user}'})
