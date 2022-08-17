@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User as _User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 # Create your models here.
@@ -10,6 +10,8 @@ ROLES = (
 )
 
 
-class User(_User):
+class User(AbstractUser):
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
     bio = models.TextField(null=True, blank=True, help_text='О себе')
-    role = models.CharField(max_length=20)
+    role = models.CharField(max_length=150)
