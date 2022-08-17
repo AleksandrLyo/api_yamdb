@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Categories(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=50, unique=True)
 
@@ -9,7 +9,7 @@ class Categories(models.Model):
         return self.name
 
 
-class Genres(models.Model):
+class Genre(models.Model):
     name = models.CharField(max_length=256)
     slug = models.SlugField(max_length=50, unique=True)
 
@@ -17,18 +17,18 @@ class Genres(models.Model):
         return self.name
 
 
-class Titles(models.Model):
+class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
     description = models.TextField()
     genre = models.ManyToManyField(
-        Genres,
+        Genre,
         blank=True,
         null=True,
         related_name='titles'
     )
     category = models.ForeignKey(
-        Categories,
+        Category,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
