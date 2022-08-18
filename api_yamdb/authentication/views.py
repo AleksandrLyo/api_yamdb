@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from users.serializers import UserSerializer
@@ -11,6 +11,7 @@ from .exceptions import UserDataException
 from .sign_up_token import account_activation_token
 
 User = get_user_model()
+
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
@@ -34,7 +35,7 @@ def signup(request):
             email.send()
             return Response({'username': user.username,
                              'email': user.email},
-                            status=status.HTTP_201_CREATED)
+                            status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -57,14 +58,11 @@ def user_activation(request):
             return Response(u.message, status=status.HTTP_400_BAD_REQUEST)
         user = get_object_or_404(User, username=username)
 
-        # if user.is_active:
-        #     return Response({'errors': 'Пользователь уже активирован'},
-        #                     status=status.HTTP_400_BAD_REQUEST)
         if account_activation_token.check_token(user, activation_token):
             user.is_active = True
             user.save()
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+            token = AccessToken.for_user(user)
+            return Response({'token': str(token)})
         else:
             return Response({'errors': 'неверный confirmation_code'},
                             status=status.HTTP_400_BAD_REQUEST)
