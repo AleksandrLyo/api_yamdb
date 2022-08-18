@@ -131,7 +131,8 @@ class Test00UserRegistration:
             'username': valid_username
         }
         request_type = 'POST'
-        response = admin_client.post(self.url_admin_create_user, data=valid_data)
+        response = admin_client.post(self.url_admin_create_user,
+                                     data=valid_data)
         outbox_after = mail.outbox
 
         assert response.status_code != 404, (
@@ -145,7 +146,8 @@ class Test00UserRegistration:
         )
         response_json = response.json()
         for field in valid_data:
-            assert field in response_json and valid_data.get(field) == response_json.get(field), (
+            assert field in response_json and valid_data.get(
+                field) == response_json.get(field), (
                 f'Проверьте, что при {request_type} запросе `{self.url_admin_create_user}` с валидными данными '
                 f'от имени администратора, в ответ приходит созданный объект пользователя в виде словаря'
             )

@@ -1,9 +1,34 @@
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
-from reviews.models import Review, Title
-from users.permissions import IsAuthorStaffOrReadOnly
+from reviews.models import Category, Genre, Review, Title
+from users.permissions import IsAdminOrReadOnly, IsAuthorStaffOrReadOnly
+from .serializers import (CategorySerializer, GenreSerializer, TitleSerializer,
+                          CommentsSerializer, ReviewsSerializer)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    pagination_class = PageNumberPagination
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    pagination_class = PageNumberPagination
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
