@@ -12,6 +12,7 @@ from .sign_up_token import account_activation_token
 
 User = get_user_model()
 
+
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def signup(request):
