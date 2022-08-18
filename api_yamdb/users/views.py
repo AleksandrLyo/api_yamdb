@@ -5,36 +5,29 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .permissions import IsAdminOnly
-from .serializers import UserSerializer
+from .serializers import UserSerializer, AdminUserSerializer
 
 User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (IsAdminOnly,)
+    serializer_class = AdminUserSerializer
+    permission_classes = [IsAdminOnly]
+    lookup_field = 'username'
 
-    @action(detail=False, methods=['GET', 'PATCH'])
+    @action(detail=False, methods=['get', 'patch'],
+            permission_classes=[IsAuthenticated])
     def me(self, request):
         if request.method == 'PATCH':
-            serializer = UserSerializer(data=request.data)
+            serializer = UserSerializer(request.user, data=request.data,
+                                        partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data,
-                                status=status.HTTP_201_CREATED)
+                                status=status.HTTP_200_OK)
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
         serializer = UserSerializer(request.user)
         return Response(serializer.data,
                         status=status.HTTP_200_OK)
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action == 'me':
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [IsAdminOnly]
-        return [permission() for permission in permission_classes]
