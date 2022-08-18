@@ -5,8 +5,6 @@ from rest_framework.pagination import PageNumberPagination
 from reviews.models import Review, Title
 from users.permissions import IsAuthorStaffOrReadOnly
 
-from .serializers import CommentsSerializer, ReviewsSerializer
-
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewsSerializer
