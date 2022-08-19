@@ -8,8 +8,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser) -> None:
         parser.add_argument(
-            'path',
-            type=str,
+            '--path',
+            default='static/data',
             help='Путь к папке с csv файлами'
         )
 
@@ -18,9 +18,3 @@ class Command(BaseCommand):
         files = check_files(path)
         models_files = get_models_and_files(path, files)
         load_data(models_files)
-        # load_users_data(path, files)
-        # load_category_data(path, files)
-        # load_genre_data(path, files)
-        # load_title_data(path, files)
-        # load_review_data(path, files)
-        # load_comment_data(path, files)
