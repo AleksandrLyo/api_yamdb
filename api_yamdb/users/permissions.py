@@ -5,6 +5,7 @@ User = get_user_model()
 
 
 class IsAuthorStaffOrReadOnly(permissions.BasePermission):
+
     def has_object_permission(self, request, view, obj):
         if request.user.role == 'moderator':
             return request.method == 'DELETE'
@@ -15,6 +16,13 @@ class IsAuthorStaffOrReadOnly(permissions.BasePermission):
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.user.is_authenticated:
+            return (request.user.role == 'admin' or
+                    request.user.is_superuser)
+
     def has_object_permission(self, request, view, obj):
         return (request.method in permissions.SAFE_METHODS or
                 request.user.role == 'admin' or request.user.is_superuser)
