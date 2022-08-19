@@ -1,8 +1,15 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 
-from users.models import User, ROLES
+ROLES = (
+    ('admin', 'администратор'),
+    ('moderator', 'модератор'),
+    ('user', 'пользователь'),
+)
+
+User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,7 +20,8 @@ class UserSerializer(serializers.ModelSerializer):
                                            queryset=User.objects.all(),
                                            message='Пользователь с таким '
                                                    'email уже существует!')])
-    role = serializers.ChoiceField(choices=ROLES, default='user')
+    role = serializers.ChoiceField(choices=ROLES, default='user',
+                                   read_only=True)
 
     def validate_username(self, value):
         if value == 'me':
@@ -24,3 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role')
+
+
+class AdminUserSerializer(UserSerializer):
+    role = serializers.ChoiceField(choices=ROLES, default='user')
