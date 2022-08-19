@@ -18,6 +18,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         path = get_path(options)
         files = get_files(path)
+        print(files)
         load_data(files, path)
         
 
