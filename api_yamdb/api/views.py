@@ -1,35 +1,74 @@
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, viewsets
+import django_filters
+from django_filters import FilterSet
+from rest_framework import filters, viewsets, mixins
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import Category, Genre, Review, Title
 from users.permissions import IsAdminOrReadOnly, IsAuthorStaffOrReadOnly
 
 from .serializers import (CategorySerializer, CommentsSerializer,
-                          GenreSerializer, ReviewsSerializer, TitleSerializer)
+                          GenreSerializer, ReviewsSerializer,
+                          TitleSerializer, TitleEditSerializer)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    pagination_class = PageNumberPagination
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-    pagination_class = PageNumberPagination
+
+
+class TitleFilter(FilterSet):
+    category = django_filters.CharFilter(
+        field_name='category__slug',
+        lookup_expr='icontains'
+    )
+    genre = django_filters.CharFilter(
+        field_name='genre__slug',
+        lookup_expr='icontains'
+    )
+    name = django_filters.CharFilter(
+        field_name='name',
+        lookup_expr='icontains'
+    )
+    year = django_filters.NumberFilter(
+        field_name='year',
+        lookup_expr='icontains'
+    )
+
+    class Meta:
+        model = Title
+        fields = '__all__'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.request.method in ('POST', 'PATCH',):
+            return TitleEditSerializer
+        return TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
