@@ -45,9 +45,9 @@ def check_files(path: str) -> Dict[str, str]:
         'category': 'category.csv',
         'comment': 'comments.csv',
         'genre': 'genre.csv',
-        'title_genre': 'genre_title.csv',
         'review': 'review.csv',
         'title': 'titles.csv',
+        'title_genre': 'genre_title.csv',
     }
     access_files = {}
     files_list = [f for f in listdir(path) if isfile(join(path, f))]
@@ -102,11 +102,13 @@ def load_data(
         'title',
         'review',
         'comment',
+        'title_genre',
     ]
     replace_field = [
         'author',
         'category',
     ]
+    print(models_files)
     for model_name in models_names_list:
         model, file = models_files[model_name]
         count_obj_before = model.objects.all().count()
