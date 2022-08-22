@@ -65,15 +65,15 @@ def check_files(path: str) -> Dict[str, str]:
 def get_models_and_files(
         path: str,
         files: Dict[str, str]) -> Dict[str, Tuple[Type[Model], str]]:
-    """Создание словаря Модель: Путь к файлу.
+    """Создание словаря {Модель: Путь к файлу}.
 
     Args:
         path (str): Полный путь к директории
         files (Dict[str, str]): Словарь проверенных файлов
 
     Returns:
-        Dict[str, Tuple[Type[Model], str]]: Имя модели, её экземпляр,
-                                            путь к файлу
+        Dict[str, Tuple[Type[Model], str]]: {Имя модели: (её экземпляр,
+                                            путь к файлу)}
     """
     models = {**apps.all_models['reviews'], **apps.all_models['users']}
     models_files = {}
@@ -92,9 +92,10 @@ def load_data(
     """Загрузка данных в модели
 
     Args:
-        models_files (Dict[str, Tuple[Type[Model], str]]): Модели и файлы
-        для них
+        models_files (Dict[str, Tuple[Type[Model], str]]): {Модель: путь
+        к файлу для этой модели}
     """
+    # Список для загрузки данных в определенном порядке
     models_names_list = [
         'user',
         'category',
@@ -104,11 +105,11 @@ def load_data(
         'comment',
         'title_genre',
     ]
+    # Список полей у которых необходимо изменить имя
     replace_field = [
         'author',
         'category',
     ]
-    print(models_files)
     for model_name in models_names_list:
         model, file = models_files[model_name]
         count_obj_before = model.objects.all().count()
@@ -118,8 +119,8 @@ def load_data(
                 if field in replace_field:
                     reader.fieldnames[index] += '_id'
             print(f'Импорт данных в модель {model.__name__}')
-            for row in reader:
+            count_row = 0
+            for count_row, row in enumerate(reader, start=1):
                 object, created = model.objects.get_or_create(**row)
-            count_row = reader.line_num - 1
         count_obj_after = model.objects.all().count()
         print(f'Добавлено {count_obj_after - count_obj_before} из {count_row}')
