@@ -1,4 +1,3 @@
-import django_filters
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -24,6 +23,7 @@ from .serializers import (CategorySerializer, CommentsSerializer,
 
 User = get_user_model()
 email = 'qwe@qwe.qw'
+
 
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
