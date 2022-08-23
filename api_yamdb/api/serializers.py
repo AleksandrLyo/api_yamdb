@@ -1,6 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
-from reviews.models import Category, Genre, Title, Comment, Review
+from reviews.models import Category, Comment, Genre, Review, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -38,20 +39,15 @@ class ReviewsSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if self.context['request'].method == 'POST':
-            title_id = (
-                self.context['request'].parser_context['kwargs']['title_id']
+            return data
+        title_id = (
+            self.context['request'].parser_context['kwargs']['title_id']
+        )
+        user = self.context['request'].user
+        if user.reviews.filter(title_id=title_id).exists():
+            raise serializers.ValidationError(
+                'Нельзя оставить отзыв на одно произведение дважды'
             )
-            user = self.context['request'].user
-            if user.reviews.filter(title_id=title_id).exists():
-                raise serializers.ValidationError(
-                    'Нельзя оставить отзыв на одно произведение дважды'
-                )
-        return data
-
-    def validate_score(self, value):
-        if 0 >= value >= 10:
-            raise serializers.ValidationError('Проверьте оценку')
-        return value
 
 
 class CommentsSerializer(serializers.ModelSerializer):
