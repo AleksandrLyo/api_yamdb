@@ -38,7 +38,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
         read_only_fields = ['title']
 
     def validate(self, data):
-        if self.context['request'].method == 'POST':
+        if self.context['request'].method != 'POST':
             return data
         title_id = (
             self.context['request'].parser_context['kwargs']['title_id']
