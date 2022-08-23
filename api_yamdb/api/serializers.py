@@ -110,6 +110,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Нельзя оставить отзыв на одно произведение дважды'
             )
+        return data
 
 
 class CommentsSerializer(serializers.ModelSerializer):
