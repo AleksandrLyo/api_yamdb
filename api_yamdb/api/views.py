@@ -1,12 +1,10 @@
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-import django_filters
-from django_filters import FilterSet
 from rest_framework import filters, viewsets, mixins
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import Category, Genre, Review, Title
 from users.permissions import IsAdminOrReadOnly, IsAuthorStaffOrReadOnly
 
+from .filters import TitleFilter
 from .serializers import (CategorySerializer, CommentsSerializer,
                           GenreSerializer, ReviewsSerializer,
                           TitleSerializer, TitleEditSerializer)
@@ -34,29 +32,6 @@ class GenreViewSet(mixins.CreateModelMixin,
     lookup_field = 'slug'
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-
-
-class TitleFilter(FilterSet):
-    category = django_filters.CharFilter(
-        field_name='category__slug',
-        lookup_expr='icontains'
-    )
-    genre = django_filters.CharFilter(
-        field_name='genre__slug',
-        lookup_expr='icontains'
-    )
-    name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='icontains'
-    )
-    year = django_filters.NumberFilter(
-        field_name='year',
-        lookup_expr='icontains'
-    )
-
-    class Meta:
-        model = Title
-        fields = '__all__'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
