@@ -6,7 +6,6 @@ from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueValidator
 
 from reviews.models import Category, Genre, Title, Comment, Review
-from users.models import ROLES
 
 User = get_user_model()
 
@@ -19,7 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
                                            queryset=User.objects.all(),
                                            message='Пользователь с таким '
                                                    'email уже существует!')])
-    role = serializers.ChoiceField(choices=ROLES, read_only=True)
+
+    role = serializers.ChoiceField(choices=User.ROLES, read_only=True)
 
     def validate_username(self, value):
         if value == 'me':
@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AdminUserSerializer(UserSerializer):
-    role = serializers.ChoiceField(choices=ROLES, read_only=False,
+    role = serializers.ChoiceField(choices=User.ROLES, read_only=False,
                                    required=False)
 
 
@@ -41,6 +41,7 @@ class AuthUserSerializer(UserSerializer):
     confirmation_code = serializers.CharField
 
     class Meta:
+        model = User
         fields = ('username', 'confirmation_code')
         read_only_fields = ['confirmation_code']
 
