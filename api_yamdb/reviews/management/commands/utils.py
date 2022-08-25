@@ -65,7 +65,7 @@ def check_files(path: str) -> Dict[str, str]:
 def get_models_and_files(
         path: str,
         files: Dict[str, str]) -> Dict[str, Tuple[Type[Model], str]]:
-    """Создание словаря {Модель: Путь к файлу}.
+    """Создание словаря {Имя модели: (её экземпляр, путь к файлу).
 
     Args:
         path (str): Полный путь к директории
